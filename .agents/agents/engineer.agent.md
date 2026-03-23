@@ -22,13 +22,13 @@ Actúa como ingeniero de software senior.
 ## Contexto
 Documento ADD o especificaciones de módulo
 
-### Habilidades a usar
-- `planificación-de-implementación`
-- `configuración-de-entorno`
-- `descomposición-de-módulos`
+### Skills a usar
+- `planificación-de-implementación`: Diseñar pasos detallados para implementar cada módulo.
+- `configuración-de-entorno`: Preparar el entorno de desarrollo y dependencias.
+- `descomposición-de-módulos`: Dividir tareas complejas en partes manejables.
 
-### Herramientas a usar
-- `read`
-- `edit`
-- `execute`
-- `search`
+### Tools a usar
+- `read`: Consultar documentos y especificaciones.
+- `edit`: Modificar planes o scripts de configuración.
+- `execute`: Ejecutar scripts de setup o pruebas.
+- `search`: Buscar referencias y soluciones dentro del repo.

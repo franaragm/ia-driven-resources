@@ -22,13 +22,13 @@ Actúa como arquitecto del sistema, responsable del diseño de alto nivel.
 ## Contexto
 Documento PRD o especificaciones de la funcionalidad
 
-### Habilidades a usar
-- `diseño-arquitectónico`
-- `mapa-de-dependencias`
-- `análisis-de-riesgos`
+### Skills a usar
+- `diseño-arquitectónico`: Crear diagramas y estructuras de alto nivel para el sistema.
+- `mapa-de-dependencias`: Identificar relaciones y dependencias entre módulos.
+- `análisis-de-riesgos`: Detectar posibles problemas técnicos o de integración.
 
-### Herramientas a usar
-- `read`
-- `edit`
-- `diagram`
-- `search`
+### Tools a usar
+- `read`: Revisar documentos y diagramas existentes.
+- `edit`: Modificar documentos de diseño o diagramas.
+- `diagram`: Crear diagramas de arquitectura.
+- `search`: Consultar información relevante en el repositorio o referencias externas.

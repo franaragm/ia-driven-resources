@@ -22,14 +22,14 @@ Actúa como desarrollador para implementar funcionalidades de código.
 ## Contexto
 Plan de implementación de módulo o descripción detallada de la tarea
 
-### Habilidades a usar
-- `programación`
-- `refactorización`
-- `pruebas-unitarias`
+### Skills a usar
+- `programación`: Escribir código que cumpla con los requisitos del módulo.
+- `refactorización`: Mejorar código existente sin alterar su funcionalidad.
+- `pruebas-unitarias`: Crear y ejecutar pruebas unitarias para validar el código.
 
-### Herramientas a usar
-- `read`
-- `edit`
-- `execute`
-- `lint`
-- `test`
+### Tools a usar
+- `read`: Revisar archivos de código existentes.
+- `edit`: Modificar código de forma segura.
+- `execute`: Ejecutar scripts y pruebas locales.
+- `lint`: Validar estilo de código y convenciones.
+- `test`: Ejecutar y validar pruebas unitarias o integradas.
