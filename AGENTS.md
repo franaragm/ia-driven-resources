@@ -6,31 +6,90 @@
 **Propósito:** TODO
 **Ámbito:** TODO
 
-**Qué existe:**
+**Componentes principales:**
 
-* TODO: componentes principales
+* TODO: listar dominios o servicios clave
 
-**Qué NO asumir:**
+**Restricciones:**
 
-* TODO: límites claros del sistema
+* No asumir requisitos no definidos
+* No modificar comportamiento fuera del scope
 
 ---
 
-## ESTRUCTURA
+## ESTRUCTURA GLOBAL
 
-```text id="opt1"
+```text id="gpldfh"
 .
 ├── AGENTS.md
 ├── .agents/
-├── src/
+├── apps/        # TODO
+├── services/    # TODO
+├── packages/    # TODO
+├── libs/        # TODO
+├── infra/       # TODO
+├── src/         # TODO (si aplica)
 ├── tests/
-├── docs/
-└── TODO
+└── docs/
 ```
 
-* Código: `TODO`
-* Tests: `TODO`
-* Config: `TODO`
+---
+
+## JIT INDEX (NAVEGACIÓN)
+
+Usar este índice para localizar rápidamente el área de trabajo.
+
+```text id="t5nv2w"
+- apps/            → TODO: descripción
+- services/        → TODO: descripción
+- packages/        → TODO: descripción
+- libs/            → TODO: descripción
+```
+
+* Consultar `AGENTS.md` locales si existen
+* No explorar el repo completo innecesariamente
+
+---
+
+## SUBAGENT FILES
+
+Antes de comenzar cualquier tarea, identifica cuál o cuáles subagents aplican y léelos. Todos los subagents están en `.agents/agents/` y siguen la convención `<orden>-<rol>.agent.md`:
+
+| Role / File                | Read when...                                                    |
+| -------------------------- | --------------------------------------------------------------- |
+| `1-analyst.agent.md`       | Analizar requisitos, generar o refinar PRD y clarificar scope   |
+| `2-architect.agent.md`     | Diseñar arquitectura, generar ADD, definir agent rules          |
+| `3-product-owner.agent.md` | Priorizar features, definir roadmap, actualizar objetivos       |
+| `4-engineer.agent.md`      | Planificación técnica detallada, preparar entorno de desarrollo |
+| `5-coder.agent.md`         | Generar o modificar código fuente                               |
+| `6-tester.agent.md`        | Crear y ejecutar tests, validar resultados                      |
+| `7-cleaner.agent.md`       | Limpiar artefactos temporales, refactor ligero                  |
+| `8-dev-ops.agent.md`       | Configuración CI/CD, deployments, infra scripts                 |
+
+---
+
+## ALCANCE (SCOPING)
+
+Trabajar SOLO en:
+
+* TODO: rutas o módulos permitidos
+
+NO modificar:
+
+* TODO: áreas críticas (ej. infra, auth, core libs)
+* TODO: código no relacionado con la tarea
+
+---
+
+## DEPENDENCIAS CLAVE
+
+* TODO: relaciones entre módulos
+* TODO: contratos importantes (API, tipos, eventos)
+
+Reglas:
+
+* No romper contratos existentes
+* Mantener compatibilidad
 
 ---
 
@@ -45,7 +104,7 @@
 
 ## COMANDOS
 
-```bash id="opt2"
+```bash id="ws0y9s"
 # setup
 TODO
 
@@ -61,69 +120,62 @@ TODO
 
 ---
 
-## REGLAS
+## REGLAS DE CAMBIO
 
-* Cambios pequeños y enfocados
-* No asumir requisitos no definidos
-* No romper comportamiento existente
-* Mantener consistencia con el código actual
-* Ejecutar tests relevantes antes de finalizar
+* Cambios mínimos y enfocados
+* Reutilizar código existente antes de crear nuevo
+* No duplicar lógica
+* Seguir patrones del repositorio
+* Mantener consistencia con el código existente
 
 ---
 
-## FLUJO DE TRABAJO DEL AGENTE
+## FLUJO DEL AGENTE
 
-1. Entender contexto relevante (no todo el repo)
-2. Localizar archivos afectados
-3. Aplicar cambios mínimos
-4. Validar (tests / lógica)
-5. Reportar resultado
+1. Identificar módulo afectado (usar JIT INDEX)
+2. Leer solo archivos relevantes
+3. Validar dependencias
+4. Aplicar cambio mínimo
+5. Ejecutar tests del módulo
+6. Verificar que no hay efectos colaterales
 
 Si hay bloqueo:
 
-* Hacer **una única pregunta concreta**
-
----
-
-## JIT INDEX (si aplica)
-
-```text id="opt3"
-- TODO: ruta/a/otro/AGENTS.md
-```
+* Hacer una única pregunta clara y específica
 
 ---
 
 ## REUSO Y OPTIMIZACION
 
-* Reutilizar código existente antes de crear nuevo
+* Priorizar reutilización sobre creación
 * Evitar duplicación
-* Seguir patrones del repo
-* TODO: reglas específicas si existen
+* Seguir patrones existentes
+* TODO: reglas específicas del proyecto
 
 ---
 
 ## ENTORNO
 
 * OS: TODO
-* Branch: TODO
+* Branch principal: TODO
 * Repo: TODO
 
 ---
 
 ## OUTPUT ESPERADO
 
-* Código limpio y funcional
-* Cambios mínimos
+* Código funcional y consistente
 * Sin efectos colaterales
-* Explicación breve (si aplica)
+* Cambios mínimos
+* Tests pasando (si existen)
+* Explicación breve (solo si aporta valor)
 
 ---
 
 ## NOTAS
 
-* Usar `TODO:` si falta info
-* Mantener este archivo corto y actualizado
+* Usar `TODO:` para información faltante
+* Mantener este archivo < 200 líneas
+* Priorizar claridad y accionabilidad
 
 ---
-
-
