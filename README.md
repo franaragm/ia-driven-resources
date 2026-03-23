@@ -15,7 +15,7 @@ Este repositorio reúne **demos, plantillas y recursos para el desarrollo impuls
 1. Clona el repositorio:
 
 ```bash
-git clone https://github.com/tu-usuario/ia-driven-resources.git
+git clone https://github.com/franaragm/ia-driven-resources.git
 ```
 
 2. Explora la carpeta correspondiente al recurso que quieras usar (`agents/`, `prompts/`, `skills/`, `demos/`).
