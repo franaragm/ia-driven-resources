@@ -1,4 +1,4 @@
-# AGENTS INSTRUCTIONS
+# AGENTS.md
 
 ## CONTEXTO
 
@@ -22,7 +22,14 @@
 ```text id="gpldfh"
 .
 ├── AGENTS.md
-├── .agents/
+├── .agents/              
+│   ├── agents/           # Worker subagents y orchestrators
+│   ├── skills/           # Skills reutilizables
+│   │   ├── TODO: skill1.agent.md
+│   │   ├── TODO: skill2.agent.md
+│   ├── prompts/          # Prompts base y plantillas
+│   │   ├── TODO: prompt1.md
+│   │   ├── TODO: prompt2.md
 ├── apps/        # TODO
 ├── services/    # TODO
 ├── packages/    # TODO
@@ -37,9 +44,7 @@
 
 ## JIT INDEX (NAVEGACIÓN)
 
-Usar este índice para localizar rápidamente el área de trabajo.
-
-```text id="t5nv2w"
+```text
 - apps/            → TODO: descripción
 - services/        → TODO: descripción
 - packages/        → TODO: descripción
@@ -53,31 +58,30 @@ Usar este índice para localizar rápidamente el área de trabajo.
 
 ## SUBAGENT FILES
 
-Antes de comenzar cualquier tarea, identifica cuál o cuáles subagents aplican y léelos. Todos los subagents están en `.agents/agents/` y siguen la convención `<orden>-<rol>.agent.md`:
-
-| Role / File                | Read when...                                                    |
-| -------------------------- | --------------------------------------------------------------- |
-| `1-analyst.agent.md`       | Analizar requisitos, generar o refinar PRD y clarificar scope   |
-| `2-architect.agent.md`     | Diseñar arquitectura, generar ADD, definir agent rules          |
-| `3-product-owner.agent.md` | Priorizar features, definir roadmap, actualizar objetivos       |
-| `4-engineer.agent.md`      | Planificación técnica detallada, preparar entorno de desarrollo |
-| `5-coder.agent.md`         | Generar o modificar código fuente                               |
-| `6-tester.agent.md`        | Crear y ejecutar tests, validar resultados                      |
-| `7-cleaner.agent.md`       | Limpiar artefactos temporales, refactor ligero                  |
-| `8-dev-ops.agent.md`       | Configuración CI/CD, deployments, infra scripts                 |
+| Role / File                   | Read when...                                                         |
+| ----------------------------- | -------------------------------------------------------------------- |
+| `1-analyst.agent.md`          | Analizar requisitos, generar o refinar PRD y clarificar scope        |
+| `2-architect.agent.md`        | Diseñar arquitectura, generar ADD, definir reglas de agente          |
+| `3-product-owner.agent.md`    | Priorizar features, definir roadmap, actualizar objetivos            |
+| `4-engineer.agent.md`         | Planificación técnica detallada, preparar entorno de desarrollo      |
+| `5-coder.agent.md`            | Generar o modificar código fuente                                    |
+| `6-tester.agent.md`           | Crear y ejecutar tests, validar resultados                           |
+| `7-cleaner.agent.md`          | Limpiar artefactos temporales, refactor ligero                       |
+| `8-dev-ops.agent.md`          | Configuración CI/CD, deployments, scripts de infraestructura         |
+| `<rol>-orchestrator.agent.md` | Coordinar múltiples subagents, gestionar handoffs y flujos paralelos |
 
 ---
 
 ## ALCANCE (SCOPING)
 
-Trabajar SOLO en:
+Trabajar **SOLO** en:
 
 * TODO: rutas o módulos permitidos
 
 NO modificar:
 
 * TODO: áreas críticas (ej. infra, auth, core libs)
-* TODO: código no relacionado con la tarea
+* TODO: código fuera del scope de la tarea
 
 ---
 
@@ -93,6 +97,54 @@ Reglas:
 
 ---
 
+## SKILLS REUTILIZABLES (`.agents/skills/`)
+
+* Cada skill debe tener un archivo `.agent.md` con la siguiente estructura:
+
+```markdown
+---
+name: <skill_name>
+description: <Qué hace la skill>
+argument-hint: <Información que necesita el agente>
+model: Auto
+tools: [<herramientas permitidas>]
+user-invocable: false
+disable-model-invocation: true
+---
+# Skill: <skill_name>
+
+## Uso
+TODO: descripción de cómo usar la skill
+
+## Contexto
+TODO: información necesaria para ejecutar la skill
+```
+
+* Ejemplo de skills:
+
+  * `generación-de-prd.agent.md`
+  * `diseño-arquitectónico.agent.md`
+  * `planificación-de-implementación.agent.md`
+
+---
+
+## PROMPTS REUTILIZABLES (`.agents/prompts/`)
+
+* Cada prompt base se almacena en `.agents/prompts/` y puede ser invocado por cualquier subagent/orchestrator.
+* Ejemplo de plantilla:
+
+```text
+# prompt1.md
+Objetivo: Analizar un PRD incompleto y generar un resumen de alcance.
+Instrucciones:
+1. Leer el PRD proporcionado
+2. Detectar vacíos y riesgos
+3. Sugerir pasos de refinamiento
+4. Devolver un resumen estructurado con secciones claras
+```
+
+---
+
 ## STACK
 
 * Lenguaje(s): TODO
@@ -104,7 +156,7 @@ Reglas:
 
 ## COMANDOS
 
-```bash id="ws0y9s"
+```bash
 # setup
 TODO
 
@@ -117,16 +169,6 @@ TODO
 # build
 TODO
 ```
-
----
-
-## REGLAS DE CAMBIO
-
-* Cambios mínimos y enfocados
-* Reutilizar código existente antes de crear nuevo
-* No duplicar lógica
-* Seguir patrones del repositorio
-* Mantener consistencia con el código existente
 
 ---
 
@@ -150,7 +192,7 @@ Si hay bloqueo:
 * Priorizar reutilización sobre creación
 * Evitar duplicación
 * Seguir patrones existentes
-* TODO: reglas específicas del proyecto
+* Consultar `.agents/skills/` y `.agents/prompts/` antes de crear nueva lógica
 
 ---
 
