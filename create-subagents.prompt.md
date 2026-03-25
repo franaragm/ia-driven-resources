@@ -46,6 +46,7 @@ Instrucciones para generar cada subagent:
    - `Skills to use`: reusable skills required, with brief description
    - `Tools to use`: allowed tools, with brief description
    - `Workflow` (orchestrators only): sequential and/or parallel steps to coordinate subagents
+   - **Humans-in-the-loop**: identify steps where the agent should **pause and request user confirmation** before continuing; mark with clear placeholders like `TODO: confirm with user`.
 
 4. **Estilo**
    - Professional, concise, actionable language
@@ -56,15 +57,16 @@ Instrucciones para generar cada subagent:
 
 5. **Documentación**
    - Analyze the `docs/` folder for project documentation
-   - Extract relevant context, rules, or examples to enrich roles, tasks, and workflows
+   - Extract relevant context, rules, or examples to enrich roles, tasks, workflows, and humans-in-the-loop decision points
 
 6. **Salida esperada**
    - Deliver only the content of the subagent file as if writing `.agents/agents/<file>.agent.md`
    - Include example commands, paths, or subagent invocations if applicable
-   - For orchestrators, clearly describe parallel flows, handoffs, and expected outputs
+   - For orchestrators, clearly describe parallel flows, handoffs, expected outputs, and points requiring user decisions
 
 Notas adicionales:
 - The prompt must work for any repository, language, or architecture
 - Each subagent must be self-contained and complementary to AGENTS.md
 - Orchestrators must coordinate multiple subagents sequentially or in parallel
 - Prioritize clarity, actionability, and consistency over lengthy narrative
+- Highlight points where **human input is required** for critical or ambiguous decisions

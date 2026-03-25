@@ -1,5 +1,5 @@
 Objetivo:
-Crear un nuevo skill autocontenido, reutilizable y correctamente documentado en `.agents/skills/`, a partir de un documento detallado de proyecto (briefing, PRD, especificación técnica, etc.), buscando en `docs/` toda la documentación para enriquecer contexto y pasos. Identificar claramente qué skills son **propios del proyecto** y cuáles pueden ser **reutilizables en otros proyectos**.
+Crear un nuevo skill autocontenido, reutilizable y correctamente documentado en `.agents/skills/`, a partir de un documento detallado de proyecto (briefing, PRD, especificación técnica, etc.), buscando en `docs/` toda la documentación para enriquecer contexto y pasos. Identificar claramente qué skills son **propios del proyecto** y cuáles pueden ser **reutilizables en otros proyectos**. Incluir puntos de **Humans-in-the-loop** para que la skill consulte al usuario cuando haya decisiones críticas o ambiguas.
 
 Instrucciones:
 
@@ -15,10 +15,12 @@ Instrucciones:
    - Redactar el nombre del skill en inglés (`kebab-case`), descriptivo y único.
    - Especificar la descripción de activación: cuándo el skill debe dispararse y qué tarea resuelve.
    - Marcar explícitamente si el skill es **reusable en otros proyectos** o es **propio del proyecto**.
+   - Identificar pasos críticos o ambiguos donde el skill debe **consultar al usuario** antes de continuar (Humans-in-the-loop).
 
 3. Plan de test y validación
    - Diseñar 2-3 prompts de ejemplo que simulen situaciones reales de uso.
    - Determinar criterios de éxito objetivos (para outputs verificables) o cualitativos (para outputs subjetivos).
+   - Incluir prompts que permitan validar la interacción Humans-in-the-loop.
 
 4. Redactar el SKILL.md
    - Frontmatter YAML obligatorio:
@@ -29,8 +31,9 @@ Instrucciones:
      ---
    - Markdown con:
      - **When to use**: contextos de activación y aplicabilidad.
-     - **Instructions**: pasos detallados, en forma imperativa, para realizar la tarea.
+     - **Instructions**: pasos detallados, en forma imperativa, para realizar la tarea. Marcar claramente pasos donde la skill **debe pausar y preguntar al usuario**.
      - **Examples**: inputs/outputs si aplica.
+     - **Humans-in-the-loop**: descripción de interacciones con el usuario, decisiones a confirmar y criterios de validación.
      - **Resources (optional)**: scripts, referencias, plantillas, assets.
 
 5. Reglas de estilo
@@ -43,6 +46,7 @@ Instrucciones:
 6. Optimización de triggering
    - Crear 8-10 queries que deberían disparar la skill y 8-10 que no (edge cases, ambigüedades).
    - Revisar con el usuario para ajustar descripciones y cobertura de triggering.
+   - Incluir queries que simulen interacciones Humans-in-the-loop para validar la pausa y consulta al usuario.
 
 7. Entrega final
    - Carpeta del skill: `.agents/skills/<skill_name>/SKILL.md`
@@ -74,6 +78,12 @@ reusable: <true|false>
 - Step 1: TODO
 - Step 2: TODO
 - Step 3: TODO
+- Step 4: TODO - **Ask user to confirm before proceeding**  # ejemplo Humans-in-the-loop
+
+## Humans-in-the-loop
+- Step X: confirm with user about ambiguous input
+- Step Y: ask user to validate outputs
+- Step Z: TODO
 
 ## Examples
 Input: TODO
