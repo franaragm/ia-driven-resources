@@ -1,95 +1,115 @@
 Objetivo:
-Crear un nuevo skill autocontenido, reutilizable y correctamente documentado en `.agents/skills/`, a partir de un documento detallado de proyecto (briefing, PRD, especificación técnica, etc.), buscando en `docs/` toda la documentación para enriquecer contexto y pasos. Identificar claramente qué skills son **propios del proyecto** y cuáles pueden ser **reutilizables en otros proyectos**. Incluir puntos de **Humans-in-the-loop** para que la skill consulte al usuario cuando haya decisiones críticas o ambiguas.
+Crear uno o varios skills autocontenidos, reutilizables y correctamente documentados en `.agents/skills/`, a partir de un documento detallado de proyecto (briefing, PRD, especificación técnica, etc.), buscando en `docs/` toda la documentación para enriquecer contexto y pasos.
+
+El sistema debe:
+- Identificar **todos los skills necesarios** para cubrir completamente el proyecto.
+- Revisar los skills ya existentes en `.agents/skills/` y su documentación.
+- Determinar qué skills ya están cubiertos y cuáles faltan.
+- Crear únicamente los skills faltantes o incompletos.
+- Evitar duplicidades y favorecer reutilización.
+- Generar **todos los skills en inglés** (nombre, descripción, contenido completo del SKILL.md).
+
+Además, debe identificar claramente qué skills son:
+- **Propios del proyecto**
+- **Reutilizables en otros proyectos**
+
+Incluir puntos de **Humans-in-the-loop** para que la skill consulte al usuario cuando haya decisiones críticas o ambiguas.
+
+---
 
 Instrucciones:
 
-1. Analizar el documento
-   - Extraer objetivos, alcance y contexto del proyecto.
-   - Identificar procesos repetibles, tareas automatizables o flujos de información.
-   - Detectar inputs/outputs esperados y formatos requeridos.
-   - Detectar restricciones, dependencias y tecnologías mencionadas.
-   - Revisar `docs/` para obtener reglas, ejemplos o documentación relevante.
+1. Auditoría de skills existentes
+   - Revisar `.agents/skills/` para identificar skills ya creados.
+   - Analizar su documentación (`SKILL.md`) y capacidades.
+   - Determinar cobertura actual respecto al proyecto.
+   - Detectar:
+     - Skills reutilizables ya disponibles
+     - Skills incompletos o mejorables
+     - Gaps funcionales (skills faltantes)
 
-2. Definir la intención del skill
-   - Determinar qué hace el skill y en qué contexto debe activarse.
-   - Redactar el nombre del skill en inglés (`kebab-case`), descriptivo y único.
-   - Especificar la descripción de activación: cuándo el skill debe dispararse y qué tarea resuelve.
-   - Marcar explícitamente si el skill es **reusable en otros proyectos** o es **propio del proyecto**.
-   - Identificar pasos críticos o ambiguos donde el skill debe **consultar al usuario** antes de continuar (Humans-in-the-loop).
+2. Analizar el documento del proyecto
+   - Extraer objetivos, alcance y contexto.
+   - Identificar procesos repetibles, tareas automatizables y flujos.
+   - Detectar inputs/outputs esperados y formatos.
+   - Detectar restricciones, dependencias y tecnologías.
+   - Revisar `docs/` para enriquecer contexto, reglas y ejemplos.
 
-3. Plan de test y validación
-   - Diseñar 2-3 prompts de ejemplo que simulen situaciones reales de uso.
-   - Determinar criterios de éxito objetivos (para outputs verificables) o cualitativos (para outputs subjetivos).
-   - Incluir prompts que permitan validar la interacción Humans-in-the-loop.
+3. Definición global de skills necesarios
+   - Crear una lista completa de todos los skills requeridos.
+   - Clasificarlos en:
+     - Ya existentes (reutilizar)
+     - Necesitan mejora
+     - Nuevos (a crear)
+   - Justificar brevemente cada decisión.
 
-4. Redactar el SKILL.md
-   - Frontmatter YAML obligatorio:
+4. Definir cada skill (solo nuevos o a mejorar)
+   - Determinar qué hace y cuándo se activa.
+   - Nombre en inglés (`kebab-case`), único y descriptivo.
+   - Descripción en inglés clara y orientada a triggering.
+   - Indicar:
+     - `reusable: true` o `false`
+   - Identificar pasos críticos donde aplicar **Humans-in-the-loop**.
+
+5. Plan de test y validación
+   - Diseñar 2-3 prompts por skill.
+   - Definir criterios de éxito (objetivos o cualitativos).
+   - Incluir casos con interacción Humans-in-the-loop.
+
+6. Redactar el SKILL.md (EN INGLÉS OBLIGATORIAMENTE)
+   - Frontmatter YAML:
      ---
      name: <skill_name>
-     description: <Qué hace y cuándo usar>
-     reusable: <true|false>  # true si puede usarse en cualquier proyecto, false si es propio
+     description: <what it does and when to use it>
+     reusable: <true|false>
      ---
-   - Markdown con:
-     - **When to use**: contextos de activación y aplicabilidad.
-     - **Instructions**: pasos detallados, en forma imperativa, para realizar la tarea. Marcar claramente pasos donde la skill **debe pausar y preguntar al usuario**.
-     - **Examples**: inputs/outputs si aplica.
-     - **Humans-in-the-loop**: descripción de interacciones con el usuario, decisiones a confirmar y criterios de validación.
-     - **Resources (optional)**: scripts, referencias, plantillas, assets.
+   - Contenido en inglés:
+     - **When to use**
+     - **Instructions** (imperative, paso a paso)
+       - Marcar claramente pasos con pausa: **Ask user before proceeding**
+     - **Humans-in-the-loop**
+     - **Examples**
+     - **Resources (optional)**
 
-5. Reglas de estilo
-   - Mantener lenguaje claro, conciso y profesional.
-   - Preferir la voz imperativa en instrucciones.
-   - Mantener SKILL.md <500 líneas.
-   - Asegurarse que la skill no contiene código malicioso ni sorpresas.
-   - Referenciar explícitamente cualquier archivo o recurso que el skill necesite.
+7. Reglas de calidad
+   - Todo el contenido debe estar en inglés.
+   - Evitar duplicación de skills existentes.
+   - Priorizar reutilización.
+   - Mantener claridad, concisión y estructura.
+   - SKILL.md < 500 líneas.
+   - Sin código malicioso.
+   - Referenciar explícitamente recursos necesarios.
 
-6. Optimización de triggering
-   - Crear 8-10 queries que deberían disparar la skill y 8-10 que no (edge cases, ambigüedades).
-   - Revisar con el usuario para ajustar descripciones y cobertura de triggering.
-   - Incluir queries que simulen interacciones Humans-in-the-loop para validar la pausa y consulta al usuario.
+8. Optimización de triggering
+   - Para cada skill:
+     - 8-10 queries que lo disparan
+     - 8-10 que NO lo disparan
+   - Incluir edge cases y ambigüedades.
+   - Incluir casos con Humans-in-the-loop.
 
-7. Entrega final
-   - Carpeta del skill: `.agents/skills/<skill_name>/SKILL.md`
-   - Lista de prompts de test: `evals/evals.json`
-   - Recursos opcionales: `scripts/`, `references/`, `assets/`
+9. Entrega final
+   - Crear solo los skills faltantes en:
+     `.agents/skills/<skill_name>/SKILL.md`
+   - Generar:
+     - `evals/evals.json` con prompts de test
+   - Incluir opcionales:
+     - `scripts/`
+     - `references/`
+     - `assets/`
+
+---
 
 Plantilla de carpeta:
 
 .agents/skills/<skill_name>/
 ├── SKILL.md
-├── scripts/      # opcional, código para tareas repetitivas
-├── references/   # opcional, documentación o ejemplos
-└── assets/       # opcional, plantillas, iconos, fonts
-
-Ejemplo SKILL.md:
+├── scripts/
+├── references/
+└── assets/
 
 ---
-name: <skill_name>
-description: <Qué hace la skill y cuándo usarla>
-reusable: <true|false>
----
 
-# <Skill Name>
-
-## When to use
-- TODO: describir contextos de activación
-
-## Instructions
-- Step 1: TODO
-- Step 2: TODO
-- Step 3: TODO
-- Step 4: TODO - **Ask user to confirm before proceeding**  # ejemplo Humans-in-the-loop
-
-## Humans-in-the-loop
-- Step X: confirm with user about ambiguous input
-- Step Y: ask user to validate outputs
-- Step Z: TODO
-
-## Examples
-Input: TODO
-Output: TODO
-
-## Resources (optional)
-- scripts/
-- references/
-- assets/
+Notas clave:
+- No asumir que un solo skill es suficiente: dividir en múltiples si es necesario.
+- Siempre validar contra skills existentes antes de crear nuevos.
+- Todos los outputs finales deben estar en inglés.
