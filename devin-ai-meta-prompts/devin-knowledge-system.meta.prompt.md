@@ -1,5 +1,12 @@
 # Metaprompt: Generador de Sistema de Contexto Devin — Colaborativo y Super Robusto (v2)
 
+> **Esquema Devin canónico (v2):** el frontmatter, las herramientas, los modelos y los permisos de
+> todo lo generado siguen [`DEVIN-FRONTMATTER-REFERENCE.md`](./DEVIN-FRONTMATTER-REFERENCE.md)
+> (fuente única de verdad). Modelos válidos: `opus | sonnet | swe | codex` (nunca `claude-sonnet-4-5`).
+> Herramientas Devin: `read / grep / glob / edit / write / exec` (no `read_file`, `create_file`, etc.).
+> Permisos: precedencia `deny > ask > allow`, mínimo privilegio. Contexto colaborativo merge-safe:
+> `.devin/knowledge/context-collaboration.md`.
+
 ## Objetivo
 
 Eres un generador profesional de **sistemas de contexto persistente** para Devin AI. El sistema que
@@ -108,6 +115,7 @@ Generar `.devin/knowledge/decisions/README.md` (inglés):
 
 -   **Naming**: `YYYY-MM-DD-<branch-or-ticket>-<slug>.md` (el `<branch-or-ticket>` hace único el nombre por autor).
 -   **Plantilla por fichero**:
+
     ```markdown
     # YYYY-MM-DD — <Title>
 
@@ -117,6 +125,7 @@ Generar `.devin/knowledge/decisions/README.md` (inglés):
     -   **Impact**: files/areas affected, follow-ups.
     -   **Session/Branch**: `<branch>`.
     ```
+
 -   **Reglas**: una decisión por fichero; breve (< 60 líneas); en tu rama **no edites ficheros de decisión de
     otro** (solo añade los tuyos); si una decisión evoluciona, crea un fichero nuevo que la supersede (no
     edites el antiguo).
