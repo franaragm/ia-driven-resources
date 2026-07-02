@@ -1,765 +1,305 @@
-# Metaprompt: Generador de Knowledge Files + Captura de Conocimiento de Sesiones (Optimizado para Devin)
-
+# Metaprompt: Generador de Sistema de Contexto Devin — Colaborativo y Super Robusto (v2)
 
 ## Objetivo
 
+Eres un generador profesional de **sistemas de contexto persistente** para Devin AI. El sistema que
+generas debe ser **super robusto para trabajo colaborativo**: varios devs, en ramas distintas, deben poder
+hacer crecer el contexto `.devin/` **sin conflictos de merge y sin corromperlo**, y cada sesión debe dejar
+el proyecto más inteligente que la anterior.
 
-Eres un generador profesional de **archivos de knowledge persistente** para Devin AI.
-Tu tarea tiene dos dimensiones:
+Tu tarea tiene tres dimensiones:
 
+1. **Crear knowledge files** — referencia en `.devin/knowledge/` que Devin consulta ANTES de trabajar.
+2. **Diseñar la captura de conocimiento de sesiones** — persistir aprendizajes al final de cada sesión
+   **de forma merge-safe**.
+3. **Instalar las 4 capas de robustez colaborativa** — estructura, congelado, redes de seguridad de git y
+   gobernanza.
 
-1. **Crear knowledge files** — documentos de referencia en `.devin/knowledge/` que Devin
-   consulta ANTES de comenzar cualquier trabajo.
-2. **Diseñar un mecanismo de captura de conocimiento de sesiones** — un sistema para que
-   al final de cada sesión de Devin, los aprendizajes relevantes se persistan automáticamente
-   en `.devin/knowledge/`, evitando que el conocimiento se pierda entre sesiones.
-
-
-**Importante:** aunque estas instrucciones están en español, **todo el contenido generado
-(knowledge files, skills, agents) DEBE escribirse completamente en inglés.**
-
-
----
-
-
-
-## Principios clave
-
-
-* **Knowledge = contexto persistente**: los archivos de knowledge son la memoria a largo plazo
-  de Devin sobre el proyecto. Se consultan antes de cada tarea.
-* **Sesiones = conocimiento efímero**: cada sesión de Devin genera aprendizajes que se pierden
-  si no se persisten. El mecanismo de captura transforma conocimiento efímero en persistente.
-* **No duplicar**: verificar siempre que el conocimiento no exista ya en otro knowledge file,
-  en skills, o en `docs/`.
-* **Atómico y enfocado**: un archivo de knowledge = un dominio. No mezclar temas.
-* **Accionable, no narrativo**: Devin debe poder actuar sobre el contenido, no solo leerlo.
-* **Todo el output final en inglés.**
-
+**Importante:** las instrucciones están en español, pero **TODO el contenido generado (knowledge, skills,
+agents, docs) DEBE escribirse en inglés.**
 
 ---
 
-
-
-## PARTE 1 — Creación de Knowledge Files
-
-
-### 1.1 Auditoría de knowledge existente
-
-
-Antes de crear cualquier knowledge file:
-
-
-1. Listar todos los archivos en `.devin/knowledge/`.
-2. Leer cada archivo — al menos el título y las secciones principales.
-3. Construir un mapa de cobertura:
-
-
-| Archivo existente | Dominio que cubre | Estado |
-|---|---|---|
-| `{nombre}.md` | {dominio} | ✅ Completo / ⚠️ Incompleto / 🔴 Desactualizado |
-
-
-4. Identificar fuentes de conocimiento adicionales:
-   - `docs/` — documentación extensa del proyecto
-   - `.devin/skills/*/SKILL.md` — convenciones embebidas en skills
-   - `.devin/agents/*/AGENT.md` — patrones referenciados por agentes
-   - `README.md`, `CONTRIBUTING.md`, archivos de configuración
-
-
-5. Detectar:
-   - Dominios sin knowledge file → **crear nuevo**
-   - Knowledge files desactualizados → **actualizar**
-   - Información dispersa en docs/skills que debería centralizarse → **extraer**
-   - Duplicidades entre knowledge files → **consolidar**
-
-
-### 1.2 Analizar el proyecto para identificar dominios de conocimiento
-
-
-Buscar conocimiento en estas categorías:
-
-
-| Categoría | Tipo de knowledge | Ejemplo de archivo |
-|---|---|---|
-| **Patrones arquitectónicos** | Cómo se estructura el código | `{framework}-patterns.md` |
-| **Testing** | Framework, mocking, cobertura | `testing-conventions.md` |
-| **Git/CI** | Branching, commits, pipelines | `git-workflow.md` |
-| **Configuración** | Entornos, variables, feature flags | `environment-config.md` |
-| **UI/Design** | Design system, tokens, componentes | `ui-components.md`, `styling-conventions.md` |
-| **i18n** | Idiomas, estructura, convenciones | `i18n-system.md` |
-| **Dev local** | Setup, dependencias, mocks | `local-dev-setup.md` |
-| **Linting/formato** | Reglas, plugins, checklist | `linter-rules.md` |
-| **Code review** | Checklist, bloqueadores, estándares | `code-review-checklist.md` |
-| **Datos/API** | Estrategia de mocking, contratos | `api-contracts.md` |
-| **Patrones reactivos / estado** | State management, async patterns | `state-management.md` |
-| **Troubleshooting** | Problemas comunes y soluciones | `troubleshooting.md` |
-| **Decisiones** | ADRs (Architecture Decision Records) | `decisions-log.md` |
-
-
-**Conjunto mínimo para cualquier proyecto:**
-1. `{framework}-patterns.md` — Patrones arquitectónicos y convenciones
-2. `testing-conventions.md` — Framework de test, mocking, cobertura
-3. `git-workflow.md` — Branching, commits, proceso de PR
-
-
-### 1.3 Formato de knowledge files
-
-
-**Reglas de formato:**
-- Markdown plano. Sin YAML frontmatter.
-- Título: `# {Topic} — {Project Name}`
-- Máximo **120 líneas** por archivo.
-- Secciones con `##` heading.
-- Tablas para referencia rápida siempre que sea posible.
-- Bloques de código con CORRECT/WRONG para patrones.
-- Anti-patrones marcados como "NEVER DO".
-- Referencias a código real del proyecto (rutas, no snippets largos).
-- `TODO:` para información pendiente.
-
-
-**Plantilla genérica de un knowledge file:**
-
-
-```markdown
-# {Topic} — {Project Name}
-
-
-## {Concepto principal}
-
-
-| Aspecto | Opción A | Opción B |
-|---|---|---|
-| {criterio} | {valor} | {valor} |
-
-
-## Patrones
-
-
-CORRECT:
-- {descripción del patrón correcto}
-
-
-WRONG:
-- {descripción del anti-patrón}
-
-
-## Checklist
-
-
-- [ ] {verificación 1}
-- [ ] {verificación 2}
-```
-
-
-**Ejemplo inventado — `testing-conventions.md`:**
-
-
-```markdown
-# Testing Conventions — My Project
-
-
-## Framework & Setup
-
-
-- **Test runner**: {framework name}
-- Config: `{config-file-path}`
-- Run: `npm run test`
-
-
-## Mocking Strategy
-
-
-CORRECT — mock by abstraction:
-
-
-    providers: [{ provide: AbstractOrderService, useValue: mockService }]
-
-
-WRONG — mock concrete implementation:
-
-
-    providers: [{ provide: OrderServiceImpl, useValue: mockService }]
-
-
-## Coverage Targets
-
-
-| Layer | Minimum |
-|---|---|
-| Services | 80% |
-| Components | 70% |
-| Utilities | 90% |
-
-
-## Checklist before commit
-
-
-- [ ] All new code has corresponding test files
-- [ ] No skipped tests (`xit`, `xdescribe`)
-- [ ] Mocks use abstract tokens, not concrete classes
-```
-
-
-**Ejemplo inventado — `git-workflow.md`:**
-
-
-```markdown
-# Git Workflow — My Project
-
-
-## Branch Topology
-
-
-    main (production)
-      └── develop (integration)
-            ├── feature/TICKET-NNN-description
-            └── hotfix/TICKET-NNN-description → PR to main + develop
-
-
-## Commit Convention
-
-
-Format: `type(scope): description`
-
-
-| Type | When |
-|---|---|
-| feat | New feature |
-| fix | Bug fix |
-| refactor | Code change that neither fixes a bug nor adds a feature |
-| test | Adding or updating tests |
-| docs | Documentation only |
-
-
-## PR Rules
-
-
-- [ ] Branch up to date with develop
-- [ ] All CI checks pass
-- [ ] At least 1 approval
-- [ ] No TODO comments without ticket reference
-```
-
-
-### 1.4 Regla Knowledge vs Skill vs Docs
-
-
-| Tipo | Ubicación | Propósito | Tamaño |
-|---|---|---|---|
-| **Knowledge** | `.devin/knowledge/` | Qué saber (patrones, convenciones, referencia rápida) | < 120 líneas |
-| **Skill** | `.devin/skills/` | Cómo hacer (instrucciones paso a paso para una tarea) | < 500 líneas |
-| **Docs** | `docs/` | Documentación extensa para humanos | Sin límite |
-
-
-**Regla de decisión:**
-- Si es una tabla de referencia o un patrón → **Knowledge**
-- Si son pasos ejecutables para completar una tarea → **Skill**
-- Si requiere > 120 líneas de explicación → **Docs** (y un knowledge que resuma lo esencial)
-
+## Principio rector (el que hace robusto al sistema)
+
+> **El contexto crece AÑADIENDO ficheros nuevos con nombres únicos, no editando/append a ficheros
+> compartidos.** Dos ramas que crean ficheros distintos se fusionan sin intervención → **conflicto
+> imposible por construcción**. Toda decisión de diseño del generador debe respetar este principio.
+
+El problema que se resuelve: un único fichero append-only (p. ej. `decisions-log.md` con entradas por
+arriba) editado por todos → conflictos en cada merge, entradas perdidas/duplicadas, contexto caótico o
+contradictorio.
 
 ---
 
+## PARTE 0 — Las 4 capas de robustez (OBLIGATORIAS)
 
+El generador DEBE instalar estas cuatro capas, de la más estructural a la de gobernanza.
 
-## PARTE 2 — Mecanismo de Captura de Conocimiento de Sesiones
+### Capa 1 — Estructura: "una entrada = un fichero"
 
+-   **Cada decisión de diseño = un fichero nuevo** en `.devin/knowledge/decisions/`.
+-   **Skills** y **agents** = una carpeta por elemento (ya son merge-safe).
+-   **Knowledge de dominio**: ficheros pequeños y monotema (< 120 líneas). Preferir crear un fichero nuevo
+    enfocado antes que engordar uno compartido.
 
-### 2.1 Concepto
+### Capa 2 — Congelar lo antiguo sin reescribir historia
 
+-   Si existe un log append-only, **congélalo como archivo histórico de solo lectura** (cabecera de aviso).
+    No migrar entradas antiguas (cambio grande y arriesgado); la convención cambia hacia delante.
 
-Cada sesión de Devin genera conocimiento valioso:
-- Decisiones de diseño tomadas
-- Problemas encontrados y sus soluciones
-- Patrones descubiertos o confirmados
-- Anti-patrones identificados
-- Configuraciones que funcionaron
+### Capa 3 — Redes de seguridad de git
 
+-   `.gitattributes` con `merge=union` para los logs que sigan siendo append-only. Es un driver integrado en
+    git (sin config local). Es **plan B** (puede duplicar/reordenar), no el mecanismo principal.
 
-Este conocimiento se pierde cuando la sesión termina. El mecanismo de captura lo persiste.
+### Capa 4 — Gobernanza / proceso
 
+-   `CODEOWNERS` con regla explícita para `/.devin/` → revisión obligatoria del contexto.
+-   **Commits de contexto separados** del código (revisión limpia, cherry-pick fácil).
+-   **Rebasear `.devin/` desde la rama de integración a menudo**.
+-   **Curación periódica** vía el agente `knowledge-curator`, en un **PR dedicado** (nunca dentro de una feature).
+-   **Automatización** vía el skill `harvest-session-knowledge` → la mecánica (naming, merge) es transparente
+    para el dev.
 
-```
-┌────────────────────────────────────────────────────┐
-│              Flujo de Knowledge                    │
-│                                                    │
-│  Sesión N  ──► harvest skill ──► .devin/knowledge/ │
-│                                                    │
-│  Sesión N+1 lee knowledge actualizado              │
-│  → Toma mejores decisiones                         │
-│  → Evita errores previos                           │
-│  → Aplica patrones confirmados                     │
-│                                                    │
-│  Periódicamente: knowledge-curator audita          │
-│  → Consolida, divide, elimina obsoleto             │
-└────────────────────────────────────────────────────┘
-```
+---
 
+## PARTE 1 — Knowledge Files
 
-### 2.2 Skill: `harvest-session-knowledge`
+### 1.1 Auditoría previa
 
+Listar `.devin/knowledge/`, leer cada fichero, mapear cobertura, y revisar `docs/`, `skills/`, `agents/`,
+`README`, config. Detectar: dominios sin knowledge → crear; obsoletos → actualizar; disperso → extraer;
+duplicados → consolidar.
 
-Crear un skill en `.devin/skills/harvest-session-knowledge/SKILL.md` que se ejecute
-al final de cada sesión (o cuando el usuario lo invoque) para extraer y persistir
-los aprendizajes de la sesión.
+### 1.2 Dominios (conjunto mínimo)
 
+Patrones arquitectónicos, testing, git/CI, config, UI/design, i18n, dev local, linting, code review,
+datos/API, estado/reactividad, troubleshooting, decisiones. **Mínimo obligatorio:**
 
-**Frontmatter:**
+1. `{framework}-patterns.md`
+2. `testing-conventions.md`
+3. `git-workflow.md`
+4. **`context-collaboration.md`** — reglas del contexto colaborativo merge-safe (NUEVO, obligatorio).
 
+### 1.3 Formato
+
+Markdown plano, sin YAML frontmatter, título `# {Topic} — {Project}`, **máx 120 líneas**, `##` sections,
+tablas de referencia, bloques CORRECT/WRONG, anti-patrones "NEVER DO", referencias a rutas (no snippets
+largos), `TODO:` para pendientes.
+
+### 1.4 Knowledge vs Skill vs Docs
+
+| Tipo      | Ubicación           | Propósito                        | Tamaño       |
+| --------- | ------------------- | -------------------------------- | ------------ |
+| Knowledge | `.devin/knowledge/` | Qué saber (patrones, referencia) | < 120 líneas |
+| Skill     | `.devin/skills/`    | Cómo hacer (pasos)               | < 500 líneas |
+| Docs      | `docs/`             | Referencia humana extensa        | sin límite   |
+
+Sistema/proceso complejo → **Docs detallado + un knowledge conciso que lo resuma** (patrón "dos niveles").
+
+---
+
+## PARTE 2 — Captura de conocimiento (merge-safe)
+
+### 2.1 Convención de decisiones (sustituye al log append-only)
+
+Generar `.devin/knowledge/decisions/README.md` (inglés):
+
+-   **Naming**: `YYYY-MM-DD-<branch-or-ticket>-<slug>.md` (el `<branch-or-ticket>` hace único el nombre por autor).
+-   **Plantilla por fichero**:
+    ```markdown
+    # YYYY-MM-DD — <Title>
+
+    -   **Decision**: what was decided.
+    -   **Rationale**: why.
+    -   **Alternatives**: options considered and why rejected.
+    -   **Impact**: files/areas affected, follow-ups.
+    -   **Session/Branch**: `<branch>`.
+    ```
+-   **Reglas**: una decisión por fichero; breve (< 60 líneas); en tu rama **no edites ficheros de decisión de
+    otro** (solo añade los tuyos); si una decisión evoluciona, crea un fichero nuevo que la supersede (no
+    edites el antiguo).
+
+Si existe `decisions-log.md`: **congélalo** con cabecera `FROZEN ARCHIVE — do NOT add new entries; new
+decisions go under ./decisions/`.
+
+### 2.2 Skill `harvest-session-knowledge` (merge-safe)
+
+Frontmatter:
 
 ```yaml
 ---
-
 name: harvest-session-knowledge
 description: >
-    Extracts learnings from the current Devin session and persists them into
-    .devin/knowledge/ files. Captures design decisions, troubleshooting fixes,
-    new patterns discovered, and anti-patterns identified. Use at the end of
-    any session, or when the user asks to "save what we learned",
-    "update knowledge", "persist learnings", or "document this decision".
-allowed-tools:
-    - read
-    - edit
-    - grep
-    - glob
+    Extracts learnings from the current Devin session and persists them into .devin/knowledge/.
+    Design decisions are saved as ONE FILE PER DECISION under .devin/knowledge/decisions/ (merge-safe),
+    never appended to a shared log. Use at end of session or when asked to "save what we learned".
+allowed-tools: [read, edit, grep, glob]
 permissions:
-    allow:
-        - Write(.devin/knowledge/**)
-triggers:
-    - user
-    - model
+    allow: [Write(.devin/knowledge/**)]
+triggers: [user, model]
 ---
-
 ```
 
+Secciones (inglés):
 
-**Secciones obligatorias del SKILL.md (en inglés):**
+1. **Quick Reference** — con nota de merge-safety (decisiones = un fichero; preferir fichero nuevo antes que editar uno grande; enlaza `context-collaboration.md`).
+2. **When to use** — fin de sesión, bug no trivial, patrón/anti-patrón, convención, petición explícita; NO triviales.
+3. **Instructions**:
+    - **Step 1 — Classify learnings:**
+      | Category | Target | Action |
+      |---|---|---|
+      | Design decision | `decisions/YYYY-MM-DD-<branch/ticket>-<slug>.md` | **Create a NEW file** (never touch the frozen log) |
+      | Bug/workaround | `troubleshooting.md` | Append row (`merge=union` safety net) |
+      | New pattern | `{domain}-patterns.md` | Prefer a NEW focused file |
+      | Anti-pattern | `{domain}-patterns.md` | WRONG / NEVER DO |
+      | Config | `environment-config.md` / `local-dev-setup.md` | Append |
+      | Convention | `{relevant}-conventions.md` | Append/update |
+    - **Step 2 — Check existing (HITL):** grep para no duplicar; contradicción o dominio nuevo → preguntar.
+    - **Step 3 — Persist:** decisión = fichero nuevo; resto en su dominio (crear si autocontenido); respetar 120 líneas.
+    - **Step 4 — Verify cross-references:** reportar (no modificar) agentes cuyo `## Context` debería enlazar el knowledge nuevo.
+    - **Step 5 — Summary (HITL):** presentar cambios; **recomendar commit de contexto SEPARADO del código**; confirmar antes de commitear.
+4. **Humans-in-the-loop** — contradicción, dominio nuevo, resumen final.
+5. **Triggering Queries** — positivas ("save what we learned", "harvest session knowledge", ...) y negativas.
+6. **Resources** — `context-collaboration.md`, `decisions/README.md`, `knowledge-curator`.
 
+### 2.3 Agente `knowledge-curator`
 
-1. **Quick Reference** — Resumen de cuándo usar + pasos condensados.
+Frontmatter con `permissions.allow: [Write(.devin/knowledge/**)]`. Rol: **no crea knowledge desde cero; cura, consolida y mejora**.
+Tareas: (1) auditar completitud/formato; (2) detectar obsolescencia vs código real; (3) **consolidar duplicados** (incluidos patrones descubiertos en varias ramas); (4) **dividir ficheros > 120 líneas**; (5) verificar cross-refs; (6) reportar gaps.
 
+-   Se ejecuta **en un PR dedicado**, NUNCA dentro de una feature.
+-   HITL antes de borrar/mergear/dividir.
+-   Output: informe de curación (tabla File | Issue | Severity | Proposed fix + acciones + gaps).
 
-2. **When to use**
-   - End of a session where decisions were made
-   - After resolving a non-trivial bug
-   - After discovering a new pattern or anti-pattern
-   - When the user asks to persist learnings
-   - After a code review that revealed conventions
-   - NOT for trivial changes (typos, formatting)
+### 2.4 Guía de contexto colaborativo (NUEVO — obligatorio)
 
+Generar `.devin/knowledge/context-collaboration.md` (< 120 líneas, inglés) con:
 
-3. **Instructions** — Pasos detallados:
+-   Principio "crecer por ficheros nuevos".
+-   Tabla "quién toca qué" + superficie de conflicto.
+-   Reglas: una decisión = un fichero; regla de oro (no editar ficheros de otro); knowledge/skills pequeños;
+    commits de contexto separados; rebasear a menudo.
+-   **Flujo de 2 devs con diagrama** (ver 2.6).
+-   Curación en PR dedicado.
+-   Redes de seguridad (`.gitattributes`, `CODEOWNERS`).
 
+Si el sistema es complejo, generar además un **doc humano detallado** (p. ej.
+`docs/.../DEVIN-CONTEXT-SYSTEM.md`) que amplíe diseño, artefactos, workflow, cobertura y FAQ; enlazarlo
+desde el índice de docs y desde `context-collaboration.md` (patrón "dos niveles").
 
-   **Step 1 — Identify session learnings.**
-   Review the session history and classify each learning:
+### 2.5 Redes de seguridad de git (NUEVO)
 
+-   `.gitattributes` (raíz):
+    ```gitattributes
+    .devin/knowledge/decisions-log.md merge=union
+    .devin/knowledge/troubleshooting.md merge=union
+    ```
+-   `CODEOWNERS` (o `.github/CODEOWNERS`), regla explícita:
+    ```
+    /.devin/ @<equipo-o-responsable>
+    ```
 
-   | Category | Target file | Action |
-   |---|---|---|
-   | Design decision | `decisions-log.md` | Append entry |
-   | Bug fix / workaround | `troubleshooting.md` | Append row |
-   | New pattern confirmed | `{domain}-patterns.md` | Append section or update |
-   | Anti-pattern discovered | `{domain}-patterns.md` | Add to WRONG section |
-   | Config that worked | `environment-config.md` or `local-dev-setup.md` | Append |
-   | Convention clarified | `{relevant}-conventions.md` | Append or update |
-
-
-   **Step 2 — Check existing knowledge.** ⚠️ HUMAN-IN-THE-LOOP
-   For each learning, search `.devin/knowledge/` to verify it is not already documented.
-   If it exists but is incomplete, propose enrichment. If it contradicts existing knowledge,
-   ask the user which is correct before proceeding.
-
-
-   **Step 3 — Persist learnings.**
-   For each new/updated learning:
-   - If the target file exists: append to the appropriate section.
-   - If the target file does not exist: create it following the knowledge template.
-   - Respect the 120-line limit. If the file would exceed it, propose splitting.
-
-
-   **Step 4 — Verify cross-references.**
-   Ensure agents that should know about the new knowledge reference the file
-   in their `## Context` section. List any agents that should be updated (do not
-   modify them — just report).
-
-
-   **Step 5 — Summary.** ⚠️ HUMAN-IN-THE-LOOP
-   Present a summary of all changes made to `.devin/knowledge/` and ask the user
-   for confirmation before committing.
-
-
-4. **Humans-in-the-loop**
-
-
-   | Step | Decision | Reason |
-   |---|---|---|
-   | 2 | Contradictory knowledge | Cannot decide which is correct without user |
-   | 2 | New domain (new file) | User must approve creating a new knowledge domain |
-   | 5 | Final summary | User reviews what was persisted |
-
-
-5. **Triggering Queries**
-
-
-   **Positive (should trigger):**
-   1. "Save what we learned in this session"
-   2. "Update the knowledge base with today's findings"
-   3. "Persist the decision we made about X"
-   4. "Document this workaround for future reference"
-   5. "Add this pattern to the knowledge files"
-   6. "We discovered an anti-pattern, save it"
-   7. "Harvest session knowledge"
-   8. "End of session — capture learnings"
-
-
-   **Negative (should NOT trigger):**
-   1. "Create a new feature" → use relevant scaffold skill
-   2. "Write documentation in docs/" → different scope
-   3. "Fix this bug" → use debug workflow, then harvest after
-   4. "Review my code" → use `reviewer` agent
-   5. "What does the knowledge say about X?" → just read `.devin/knowledge/`
-
-
-### 2.3 Agente: `knowledge-curator`
-
-
-Crear un agente en `.devin/agents/knowledge-curator/AGENT.md` que audite y mantenga
-la calidad del knowledge base periódicamente.
-
-
-**Frontmatter:**
-
-
-```yaml
----
-
-name: knowledge-curator
-description: >
-    Audits and maintains the quality of .devin/knowledge/ files. Detects
-    obsolete content, consolidates duplicates, splits oversized files, verifies
-    cross-references between agents/skills and knowledge, and reports gaps.
-    Invoke when: periodic knowledge maintenance, after major refactors,
-    or when knowledge inconsistencies are suspected.
-model: claude-sonnet-4-5
-allowed-tools:
-    - read_file
-    - grep_search
-    - file_search
-    - semantic_search
-    - create_file
-    - edit_file
-    - str_replace_editor
-permissions:
-    allow:
-        - Write(.devin/knowledge/**)
----
+### 2.6 Flujo de 2 devs (debe quedar documentado)
 
 ```
-
-
-**Secciones obligatorias del AGENT.md (en inglés):**
-
-
-1. **Role** — Maintain the health and quality of `.devin/knowledge/`.
-
-
-   > This agent does NOT create knowledge from scratch. It curates, consolidates,
-   > and improves existing knowledge files.
-
-
-2. **Tasks** (numeradas):
-   1. **Audit completeness** — List all knowledge files, check each has proper title,
-      sections, and follows the template.
-   2. **Detect obsolescence** — Cross-reference knowledge content against current
-      code and configs. Flag entries that reference files/patterns no longer in the codebase.
-   3. **Consolidate duplicates** — Find overlapping content across knowledge files.
-      Merge into a single source of truth.
-   4. **Split oversized files** — Any knowledge file > 120 lines should be divided
-      into two focused files.
-   5. **Verify cross-references** — Check that agents referencing knowledge files
-      point to files that exist and are up to date.
-   6. **Report gaps** — Identify project domains without knowledge coverage.
-
-
-3. **Context**
-   - Read ALL files in `.devin/knowledge/`
-   - Read `AGENTS.md` root for the JIT Index
-   - Read `.devin/agents/*/AGENT.md` for cross-reference verification
-   - Read `.devin/skills/*/SKILL.md` for embedded conventions that should be in knowledge
-
-
-4. **How to use this subagent**
-
-
-   Example invocation:
-
-
-       Audit the knowledge base. Check for obsolete content, duplicates,
-       oversized files, and missing cross-references. Report findings
-       and propose fixes.
-
-
-5. **Output** — Curation report:
-
-
-   ```
-   ## Knowledge Curation Report
-
-
-   ### Files audited: {N}
-
-
-   ### Issues found:
-
-
-   | File | Issue | Severity | Proposed fix |
-   |---|---|---|---|
-   | {file} | {issue} | High/Medium/Low | {fix} |
-
-
-   ### Actions taken:
-
-
-   - [ ] {action 1}
-   - [ ] {action 2}
-
-
-   ### Gaps detected:
-
-
-   | Domain | Suggested file | Reason |
-   |---|---|---|
-   ```
-
-
-6. **Humans-in-the-loop**
-
-
-   > **Human-in-the-loop**: Before deleting any knowledge content marked as obsolete,
-   > present findings and wait for user confirmation.
-
-
-### 2.4 Integración en orchestrators existentes
-
-
-Cada orchestrator del proyecto puede incluir una fase final opcional de knowledge harvesting.
-Añadir al final de la sección `## Workflow` de cada orchestrator:
-
-
-```markdown
-### Phase N (optional) — Knowledge Harvesting
-
-
-If the session produced notable learnings (new patterns, bug fixes, design decisions):
-
-
-> Invoke skill: `harvest-session-knowledge`
->
-> Prompt: "Harvest learnings from this session. Focus on: {brief context of what was done}."
+development (baseline .devin/)
+   │  Dev A ramifica            Dev B ramifica
+   ▼                            ▼
+feature/A                    feature/B
+  harvest → decisions/…-A.md     harvest → decisions/…-B.md   (nombre distinto)
+  commit de contexto aparte      commit de contexto aparte
+   │ merge a development          │ rebase desde development → recoge …-A.md sin conflicto
+   ▼                             ▼  merge
+development: decisions/…-A.md ✔ y …-B.md ✔ (ambos intactos)
+Único conflicto posible: ambos editan el MISMO fichero de dominio → rebase + resolución pequeña y localizada.
 ```
 
+### 2.7 Integración en orchestrators
 
-Esta fase es **opcional** — solo se activa si hubo aprendizajes significativos.
-El orchestrator decide si invocarla basándose en la complejidad de la sesión.
+Fase final opcional: invocar `harvest-session-knowledge` si hubo aprendizajes notables.
 
-
-### 2.5 Diagrama del sistema completo
-
+### 2.8 Diagrama del sistema completo
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                    Devin Session                         │
-│                                                          │
-│  Orchestrator / Manual work                              │
-│  ├── Phase 1..N — normal workflow                        │
-│  └── Phase final (optional) — harvest-session-knowledge  │
-│       │                                                  │
-│       ▼                                                  │
-│  ┌─────────────────────────────────────────────┐         │
-│  │  harvest-session-knowledge (Skill)          │         │
-│  │                                             │         │
-│  │  Identify → Check existing → Persist        │         │
-│  │  → Verify cross-refs → Summary (HITL)       │         │
-│  └─────────────────────────────────────────────┘         │
-│       │                                                  │
-│       ▼                                                  │
-│  .devin/knowledge/                                       │
-│  ├── decisions-log.md        (append)                    │
-│  ├── troubleshooting.md      (append)                    │
-│  ├── {domain}-patterns.md    (append or create)          │
-│  └── ...                                                 │
-└──────────────────────────────────────────────────────────┘
-
-
-┌──────────────────────────────────────────────────────────┐
-│    knowledge-curator (Agent) — ejecución periódica       │
-│                                                          │
-│  Auditar → Consolidar → Dividir → Cross-referenciar      │
-│  Eliminar duplicados → Detectar obsolescencia            │
-└──────────────────────────────────────────────────────────┘
+Devin Session
+  └── Phase final (optional) — harvest-session-knowledge
+        ▼
+  .devin/knowledge/
+    ├── decisions/YYYY-..-<branch>-<slug>.md   (NEW file — merge-safe)
+    ├── decisions-log.md                        (FROZEN archive)
+    ├── troubleshooting.md                      (append; merge=union)
+    ├── context-collaboration.md                (collab rules)
+    └── {domain}.md                             (new/small)
+Safety nets: .gitattributes(merge=union) + CODEOWNERS(/.devin/)
+Periodic: knowledge-curator (dedicated PR) → consolidate/split/dedupe
 ```
 
+### 2.9 Archivo especial `troubleshooting.md`
 
-### 2.6 Archivo especial: `decisions-log.md`
-
-
-Un knowledge file para capturar decisiones de diseño de cada sesión:
-
-
-```markdown
-# Decisions Log — {Project Name}
-
-
-## Format
-
-
-Each entry follows: Date | Decision | Rationale | Alternatives | Session
-
-
-## Entries
-
-
-### YYYY-MM-DD — {Decision title}
-
-
-**Decision**: {What was decided}
-**Rationale**: {Why this option was chosen}
-**Alternatives**: {What else was considered and why rejected}
-**Impact**: {What parts of the codebase are affected}
-**Session**: {Devin session or PR reference}
-```
-
-
-### 2.7 Archivo especial: `troubleshooting.md`
-
-
-Un knowledge file para capturar problemas y soluciones:
-
-
-```markdown
-# Troubleshooting — {Project Name}
-
-
-## Format
-
-
-Each entry: Symptom | Root Cause | Solution | Prevention
-
-
-## Entries
-
-
-| Symptom | Root Cause | Solution | Prevention |
-|---|---|---|---|
-| {What the user sees} | {Why it happens} | {How to fix} | {How to avoid} |
-```
-
+Tabla `Symptom | Root Cause | Solution | Prevention`. Append-only, cubierto por `merge=union`.
 
 ---
-
-
 
 ## PARTE 3 — Reglas generales
 
+### 3.1 Calidad
 
-### 3.1 Reglas de calidad para knowledge files
+Inglés; sin frontmatter en knowledge; título `# {Topic} — {Project}`; máx 120 líneas; tablas; CORRECT/WRONG;
+"NEVER DO"; rutas no snippets; sin narrativa; `TODO:`.
 
+### 3.2 Estilo
 
-- Todo el contenido en inglés.
-- Sin YAML frontmatter (Markdown plano).
-- Título: `# {Topic} — {Project Name}`.
-- Máximo 120 líneas por archivo.
-- Tablas para referencia rápida.
-- Bloques de código con CORRECT/WRONG para patrones.
-- Anti-patrones marcados como "NEVER DO".
-- Referencias a rutas del proyecto, no snippets extensos.
-- Sin narrativa ni explicaciones largas.
-- `TODO:` para información pendiente.
+`##` headings; fences con lenguaje; tablas a la izquierda; listas con `-`; línea vacía entre secciones; sin
+emojis (salvo checklists `- [ ]`).
 
+### 3.3 Crear vs actualizar vs ignorar (merge-safe)
 
-### 3.2 Reglas de estilo
-
-
-- Secciones con `##` heading.
-- Código con lenguaje especificado en el fence.
-- Tablas con alineación a la izquierda.
-- Listas con `-` (no `*`).
-- Una línea vacía entre secciones.
-- Sin emojis en el contenido (excepto en checklists: `- [ ]`).
-
-
-### 3.3 Cuándo crear vs. actualizar vs. ignorar
-
-
-| Situación | Acción |
-|---|---|
-| Descubrimiento nuevo, dominio existente | **Append** a archivo existente |
-| Descubrimiento nuevo, dominio nuevo | **Crear** nuevo archivo (con aprobación del usuario) |
-| Ya documentado, contenido completo | **Ignorar** (no duplicar) |
-| Ya documentado, contenido incompleto | **Enriquecer** sección existente |
-| Información contradictoria | **HITL** — preguntar al usuario cuál es correcta |
-| Archivo > 120 líneas | **Dividir** en dos archivos más enfocados |
-
+| Situación                               | Acción                                                         |
+| --------------------------------------- | -------------------------------------------------------------- |
+| **Decisión de diseño (cualquiera)**     | **Crear fichero nuevo** en `decisions/` (nunca append al log)  |
+| Descubrimiento nuevo, dominio existente | Preferir **fichero nuevo enfocado**; si encaja, append pequeño |
+| Descubrimiento nuevo, dominio nuevo     | **Crear** (con aprobación del usuario)                         |
+| Ya documentado y completo               | **Ignorar**                                                    |
+| Ya documentado, incompleto              | **Enriquecer**                                                 |
+| Información contradictoria              | **HITL** — preguntar                                           |
+| Archivo > 120 líneas                    | **Dividir**                                                    |
 
 ### 3.4 Salida esperada
 
+Con cabecera `--- File: <ruta> ---` y contenido **en inglés**:
 
-Entregar según el caso:
-
-
-**Para creación/auditoría de knowledge:**
-
-
-    ---
-
-    File: `.devin/knowledge/{nombre}.md`
-    ---
-
-    [contenido en inglés]
-
-
-**Para el skill de captura:**
-
-
-    ---
-
-    File: `.devin/skills/harvest-session-knowledge/SKILL.md`
-    ---
-
-    [contenido en inglés]
-
-
-**Para el agent curador:**
-
-
-    ---
-
-    File: `.devin/agents/knowledge-curator/AGENT.md`
-    ---
-
-    [contenido en inglés]
-
-
-**Para integración en orchestrators:**
-- Instrucciones de qué añadir al workflow de cada orchestrator existente.
-
-
-**Para AGENTS.md:**
-- Nuevas filas para las tablas `## SUBAGENT FILES` y `## REUSABLE SKILLS`.
-
+-   Knowledge/auditoría → `.devin/knowledge/{nombre}.md`
+-   Guía colaborativa → `.devin/knowledge/context-collaboration.md`
+-   Convención de decisiones → `.devin/knowledge/decisions/README.md`
+-   Skill de captura → `.devin/skills/harvest-session-knowledge/SKILL.md`
+-   Agente curador → `.devin/agents/knowledge-curator/AGENT.md`
+-   Redes de seguridad → `.gitattributes` + regla en `CODEOWNERS`
+-   (Opcional) doc detallado → `docs/.../DEVIN-CONTEXT-SYSTEM.md`
+-   Congelado → cabecera FROZEN en `decisions-log.md` (si existía)
+-   Integración en orchestrators → qué añadir al workflow
+-   `AGENTS.md` → filas para `## SUBAGENT FILES` y `## REUSABLE SKILLS`, y nota "Knowledge lifecycle" con la
+    regla merge-safe (una decisión = un fichero) + enlace a `context-collaboration.md`.
 
 ---
 
+## Criterios de aceptación (el sistema NO es robusto si falta alguno)
 
+-   [ ] Las decisiones se guardan como **un fichero por decisión** en `decisions/` (no append a un log).
+-   [ ] Existe `decisions/README.md` con naming (`YYYY-MM-DD-<branch/ticket>-<slug>`) y plantilla.
+-   [ ] El log antiguo (si existía) está **congelado** con aviso.
+-   [ ] Existe `context-collaboration.md` con la tabla "quién toca qué" y el flujo de 2 devs.
+-   [ ] `.gitattributes` define `merge=union` para los logs append-only.
+-   [ ] `CODEOWNERS` tiene regla explícita para `/.devin/`.
+-   [ ] `harvest-session-knowledge` crea fichero de decisión (no edita el log) y recomienda commit de contexto separado.
+-   [ ] `knowledge-curator` consolida/divide/deduplica en un PR dedicado.
+-   [ ] `AGENTS.md` documenta la regla merge-safe y enlaza la guía.
+-   [ ] Todos los ficheros de knowledge < 120 líneas y en inglés.
 
 ## Regla final
 
-
-El conocimiento que no se persiste, se pierde.
-Cada sesión de Devin es una oportunidad de hacer al sistema más inteligente.
-El objetivo es que la sesión N+1 sea mejor que la sesión N porque el
-knowledge base creció con los aprendizajes de la sesión N.
-
-
-
+El conocimiento que no se persiste se pierde; el que se persiste mal, corrompe el contexto. El objetivo es
+doble: que la **sesión N+1 sea mejor que la N**, y que **varios devs en ramas distintas** hagan crecer el
+contexto **sin conflictos ni caos**, porque el sistema crece **añadiendo ficheros nuevos con nombres
+únicos**, con redes de seguridad de git y gobernanza que lo mantienen coherente.
